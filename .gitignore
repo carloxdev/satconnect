@@ -1,0 +1,18 @@
+# OS generated files 
+# ---------------------------------------
+.DS_Store
+.Trashes
+Thumbs.db
+
+# Python Files
+# ---------------------------------------
+*.pyc
+
+# Python Files
+# ---------------------------------------
+db.*
+
+# DIRECTORIES
+# ---------------------------------------
+.vscode/*
+LibTools/*
