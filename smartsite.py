@@ -15,11 +15,13 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "SmartCFDI.settings")
 # Django's Libraries
 from django.db import connection
 from django.core.wsgi import get_wsgi_application
+from django.core.files import File
 
 application = get_wsgi_application()
 
 # Site's Models
 from configuracion.models import Empresa
+from configuracion.models import EmailAccount
 from facturas.models import ComprobanteProveedor
 from jde.models import F0101
 from jde.models import F5903000
@@ -125,13 +127,14 @@ class ModeloComprobanteProveedor(object):
                 uuid=_comprobante.uuid,
                 fechaTimbrado=_comprobante.fechaTimbrado,
                 noCertificadoSAT=_comprobante.noCertificadoSAT,
-                selloSAT=_comprobante.selloSAT,
-                url=_comprobante.url,
+                selloSAT=_comprobante.selloSAT
             )
 
             empresa = Empresa.objects.get(clave=_comprobante.empresa_clave)
             comprobante.empresa = empresa
             comprobante.save()
+
+            comprobante.archivo_xml.save(_comprobante.nombre, File(open(_comprobante.get_Abspath(), 'r')))
 
             print "Se guardo el comprobante: {}".format(_comprobante.uuid)
 
@@ -165,6 +168,69 @@ class ModeloComprobanteProveedor(object):
             return factura
 
         except Exception as error:
+            raise Error(
+                type(error).__name__,
+                origin,
+                "",
+                str(error)
+            )
+
+    @classmethod
+    def update_SatStatus(self, _comprobante):
+
+        origin = "ModeloComprobanteProveedor.update_SatStatus()"
+
+        try:
+            connection.close()
+            comprobante = ComprobanteProveedor.objects.get(uuid=_comprobante.uuid)
+            comprobante.estadoSat = _comprobante.estadoSat
+            comprobante.fecha_validacion = _comprobante.fecha_validacion
+            comprobante.save()
+
+            print "Se actualizo el comprobante: {}".format(_comprobante.uuid)
+
+        except Exception as error:
+
+            raise Error(
+                type(error).__name__,
+                origin,
+                "",
+                str(error)
+            )
+
+    @classmethod
+    def update_Comprobacion(self, _comprobante):
+
+        origin = "ModeloComprobanteProveedor.update_Comprobacion()"
+
+        try:
+            connection.close()
+            comprobante = ComprobanteProveedor.objects.get(uuid=_comprobante.uuid)
+            comprobante.comprobacion = _comprobante.comprobacion
+
+            file_name = _comprobante.nombre.replace(
+                'xml',
+                'pdf'
+            ).replace(
+                'XML',
+                'PDF'
+            )
+
+            file_abspath = _comprobante.get_Abspath().replace(
+                'xml',
+                'pdf'
+            ).replace(
+                'XML',
+                'PDF'
+            )
+
+            comprobante.archivo_pdf.save(file_name, File(open(file_abspath, 'r')))
+            # comprobante.save()
+
+            print "Se actualizo el comprobante: {}".format(_comprobante.uuid)
+
+        except Exception as error:
+
             raise Error(
                 type(error).__name__,
                 origin,
@@ -239,10 +305,9 @@ class ModeloComprobanteProveedor(object):
             comprobante.fechaTimbrado = _comprobante.fechaTimbrado
             comprobante.noCertificadoSAT = _comprobante.noCertificadoSAT
             comprobante.selloSAT = _comprobante.selloSAT
-            comprobante.url = _comprobante.url
             comprobante.save()
 
-            print "Se guardo el comprobante: {}".format(_comprobante.uuid)
+            print "Se actualizo el comprobante: {}".format(_comprobante.uuid)
 
         except Exception as error:
 
@@ -270,9 +335,9 @@ class ModeloF5903000(object):
                 fttaxs=_comprobante.receptor_rfc,
                 ftbrtpo="CXP",
                 ftcrcd=_comprobante.moneda[0:3],
-                ftcrr=Validator.convertToFloat(_comprobante.tipo_cambio),
+                ftcrr=Validator.convertToFloat(_comprobante.tipoCambio),
                 ftamrt1=Validator.convertToFloat(_comprobante.total) * 10000,
-                ftamrt2=Validator.convertToFloat(_comprobante.subtotal) * 10000,
+                ftamrt2=Validator.convertToFloat(_comprobante.subTotal) * 10000,
                 ftamrt3=Validator.convertToFloat(_comprobante.total) * 10000,
                 fturcd=0,
                 ftupmj=Validator.convertToJulianJDE(datetime.now().date()),
@@ -286,7 +351,7 @@ class ModeloF5903000(object):
 
             # ftan8 = _comprobante.getClaveProveedorJDE()
 
-            registro.save()
+            registro.save(using="jde_p")
             return "Se guardo el comprobante: {}".format(_comprobante.uuid)
 
         except Exception as error:
@@ -318,7 +383,7 @@ class ModeloF0101(object):
 
         try:
             connection.close()
-            registro = F0101.object.get(rfc=_rfc)
+            registro = F0101.objects.using('jde_p').get(rfc__contains=_rfc)
             return registro
 
         except Exception as error:
@@ -328,7 +393,38 @@ class ModeloF0101(object):
                     "validacion",
                     origin,
                     "no proveedor",
-                    "No se encontro proveedor"
+                    "No se encontro proveedor %s" % (_rfc)
+                )
+
+            else:
+                raise Error(
+                    type(error).__name__,
+                    origin,
+                    "",
+                    str(error)
+                )
+
+
+class ModeloEmailAccount(object):
+
+    @classmethod
+    def get_ByClave(self, _clave):
+
+        origin = "ModeloEmailAccount.get_ByClave()"
+
+        try:
+            connection.close()
+            registro = EmailAccount.objects.get(clave=_clave)
+            return registro
+
+        except Exception as error:
+
+            if type(error).__name__ == 'DoesNotExist':
+                raise Error(
+                    "validacion",
+                    origin,
+                    "no proveedor",
+                    "No se encontro cuenta %s" % (_clave)
                 )
 
             else:

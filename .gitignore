@@ -4,13 +4,15 @@
 .Trashes
 Thumbs.db
 
-# Python Files
+# Python's Files
 # ---------------------------------------
 *.pyc
 
-# Python Files
+# Other's Files
 # ---------------------------------------
 db.*
+monitor_cxp.py
+monitor_sat.py
 
 # DIRECTORIES
 # ---------------------------------------

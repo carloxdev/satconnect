@@ -129,10 +129,12 @@ class Comprobante(Archivo):
         # Horas Extras
         self.horasExtras = []
 
-        # Url, Estado:
+        # Otros campos
         self.empresa_clave = ''
-        self.url = ''
         self.resumen_tipo = 'UNKNOWN'
+        self.comprobacion = "NRE"
+        self.estadoSat = "SIN VALIDAR"
+        self.fecha_validacion = ''
 
         self.raiz = None
         self.name_spaces = None

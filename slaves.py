@@ -10,6 +10,7 @@ from LibTools.filesystem import Carpeta
 from LibTools.filesystem import Archivo
 from LibTools.data import Error
 from LibTools.memory import LogMemory
+from LibTools.communication import Postman
 
 from sat import WebServiceSAT
 
@@ -17,6 +18,7 @@ from documents import Comprobante
 
 from smartsite import ModeloEmpresa
 from smartsite import ModeloComprobanteProveedor
+from smartsite import ModeloEmailAccount
 from smartsite import ModeloF0101
 from smartsite import ModeloF5903000
 
@@ -306,9 +308,9 @@ class Sentinel(object):
                 "El archivo no contiene UUID"
             )
 
-    def validate_Empresa(self, _file):
+    def validate_Empresa_InSmart(self, _file):
 
-        origin = "Sentinel.validate_Empresa()"
+        origin = "Sentinel.validate_Empresa_InSmart()"
 
         try:
             empresa = ModeloEmpresa.get_ByRfc(_file.receptor_rfc)
@@ -330,132 +332,9 @@ class Sentinel(object):
                 str(error)
             )
 
-    def save_InSmart(self, _file):
+    def validate_Estado_InSat(self, _file):
 
-        origin = "Sentinel.save_InSmart()"
-
-        try:
-            ModeloComprobanteProveedor.add(_file)
-            self.log.line("Guardar en SmartCFDI.......OK")
-
-        except Exception as error:
-
-            if error.control == "registro ya existe":
-                self.log.line("Guardar en SmartCFDI.......Ya existe en BD")
-
-            else:
-                self.log.line("Guardar en SmartCFDI.......%s" % (error.mensaje))
-
-                self.log.line("No se pudo guardar en SmartCFDI por lo cual se movera a NO_PROCESADAS")
-
-                self.move_To_NoProcesadas(_file, _with_pdf=True)
-
-                raise Error(
-                    "validacion",
-                    origin,
-                    "error al guardar in smart",
-                    str(error)
-                )
-
-    def change_Status_InSmart(self, _file):
-
-        origin = "Sentinel.change_Status_InSmart()"
-
-        try:
-            ModeloComprobanteProveedor.update(file)
-            self.log.line("Cambiar Estado SAT en SmartCFDI......OK")
-
-        except Exception as error:
-            self.log.line("Cambiar Estado SAT en SmartCFDI.......%s" % (error.mensaje))
-
-            self.log.line("No se pudo actualizar el Estado SAT en SmartCFDI por lo cual se movera a NO_PROCESADAS")
-
-            self.move_To_NoProcesadas(_file, _with_pdf=True)
-
-            raise Error(
-                "validacion",
-                origin,
-                "error al actualizar estado in smart",
-                str(error)
-            )
-
-    def mark_Reception_InSmart(self, _file):
-
-        origin = "Sentinel.mark_Reception_InSmart()"
-
-        try:
-            _file.comprobacion = "RECIBIDO"
-            ModeloComprobanteProveedor.update(_file)
-            self.log.line("Marcar de recibido en SmartCFDI......OK")
-
-        except Exception as error:
-            self.log.line("Marcar de recibido en SmartCFDI.......%s" % (error.mensaje))
-
-            self.log.line("No se pudo marcar de recibido en SmartCFDI por lo cual se movera a NO_PROCESADAS")
-
-            self.move_To_NoProcesadas(_file, _with_pdf=True)
-
-            raise Error(
-                "validacion",
-                origin,
-                "error al marcar de recibido in smart",
-                str(error)
-            )
-
-    def validate_Proveedor(self, _file):
-
-        origin = "Sentinel.validate_Proveedor()"
-
-        try:
-            proveedor = ModeloF0101.get_ByRfc(_file.emisor_rfc)
-            _file.emisor_jde_clave = proveedor[0].clave
-            self.log.line("Validacion de Proveedor.......OK")
-
-        except Exception as error:
-
-            self.log.line("Validacion de Proveedor.......%s." % (error.mensaje))
-
-            self.log.line("Ocurrio error al validar Proveedor, por lo cual se movera a NO_PROCESADOS")
-
-            self.move_To_NoProcesadas(_file, _with_pdf=True)
-
-            raise Error(
-                "validacion",
-                origin,
-                "no proveedor",
-                str(error)
-            )
-
-    def save_InJDE(self, _file):
-
-        origin = "Sentinel.save_InJDE()"
-
-        try:
-            ModeloF5903000.add(_file)
-            self.log.line("Guardar en JDE.......OK")
-
-        except Exception as error:
-
-            if error.control == "registro ya existe":
-                self.log.line("Guardar en JDE.......Ya existe en BD")
-
-            else:
-                self.log.line("Guardar en JDE.......%s" % (error.mensaje))
-
-                self.log.line("No se pudo guardar en JDE por lo cual se movera a NO_PROCESADAS")
-
-                self.move_To_NoProcesadas(_file, _with_pdf=True)
-
-                raise Error(
-                    "validacion",
-                    origin,
-                    "error al guardar in smart",
-                    str(error)
-                )
-
-    def validate_EstadoSat(self, _file):
-
-        origin = "Sentinel.validate_EstadoSat()"
+        origin = "Sentinel.validate_Estado_InSat()"
 
         try:
             webservice = WebServiceSAT()
@@ -486,10 +365,105 @@ class Sentinel(object):
                 str(error)
             )
 
+    def report_Results(self, _title):
+
+        try:
+
+            self.log.section("INFORMANDO RESULTADOS")
+
+            settings = ModeloEmailAccount.get_ByClave("notificaciones")
+            cartero = Postman(
+                settings.account,
+                settings.password,
+                settings.smtp_server,
+                settings.people
+            )
+
+            cartero.send_Gmail_Message(_title, self.log.texto)
+
+        except Exception as error:
+            print str(error)
+
+
+class SentinelSat(Sentinel):
+
+    def change_Status_InSmart(self, _file):
+
+        origin = "Sentinel.change_Status_InSmart()"
+
+        try:
+            ModeloComprobanteProveedor.update_SatStatus(_file)
+            self.log.line("Cambiar Estado SAT en SmartCFDI......OK")
+
+        except Exception as error:
+            self.log.line("Cambiar Estado SAT en SmartCFDI.......%s" % (error.mensaje))
+
+            self.log.line("No se pudo actualizar el Estado SAT en SmartCFDI por lo cual se movera a NO_PROCESADAS")
+
+            self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+            raise Error(
+                "validacion",
+                origin,
+                "error al actualizar estado in smart",
+                str(error)
+            )
+
+    def save_InSmart(self, _file):
+
+        origin = "Sentinel.save_InSmart()"
+
+        try:
+            ModeloComprobanteProveedor.add(_file)
+            self.log.line("Guardar en SmartCFDI.......OK")
+
+        except Exception as error:
+
+            if error.control == "registro ya existe":
+                self.log.line("Guardar en SmartCFDI.......Ya existe en BD")
+
+            else:
+                self.log.line("Guardar en SmartCFDI.......%s" % (error.mensaje))
+
+                self.log.line("No se pudo guardar en SmartCFDI por lo cual se movera a NO_PROCESADAS")
+
+                self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+                raise Error(
+                    "validacion",
+                    origin,
+                    "error al guardar in smart",
+                    str(error)
+                )
+
+    def start_Monitoring(self):
+
+        self.log.section(
+            "COMENZANDO MONITORIO DE CARPETA: %s" % (self.folder_pendientes.abspath)
+        )
+
+        before = dict([(f, None) for f in os.listdir(self.folder_pendientes.abspath)])
+
+        while 1:
+            time.sleep(10)
+            after = dict([(f, None) for f in os.listdir(self.folder_pendientes.abspath)])
+            added = [f for f in after if not f in before]
+            removed = [f for f in before if not f in after]
+
+            if added:
+                self.process_Files(added)
+
+            if removed:
+                # elSentinela.toProcessInvoices(removed)
+                print "\nRemoved: ", ", ".join(removed)
+                # Aqui va ir el codigo que revisa
+
+            before = after
+
     def process_Files(self, _file_names):
 
         self.log.section(
-            "ARCHIVOS A PROCESAR: %s" % (len(_file_names))
+            "ARCHIVOS DEL SAT A CARGAR: %s" % (len(_file_names))
         )
 
         count_procesados = 0
@@ -516,11 +490,203 @@ class Sentinel(object):
 
                 self.read_File(file)
 
-                self.validate_Empresa(file)
+                self.validate_Empresa_InSmart(file)
 
                 self.save_InSmart(file)
 
-                self.validate_EstadoSat(file)
+                self.validate_Estado_InSat(file)
+
+                if file.estadoSat == "Vigente":
+
+                    self.log.line("Comprobante con estado Valido se movera a VALIDAS")
+
+                    self.change_Status_InSmart(file)
+
+                    folder_validas = self.create_Folder_Validas(file)
+
+                    self.move_To_Procesadas(file, folder_validas, _with_pdf=False)
+
+                elif file.estadoSat == "Cancelado":
+
+                    self.log.line("Comprobante con estado Cancelado se movera a NO_VALIDAS")
+
+                    self.change_Status_InSmart(file)
+
+                    folder_novalidas = self.create_Folder_NoValidas(file)
+
+                    self.move_To_Procesadas(file, folder_novalidas, _with_pdf=False)
+
+                elif file.estadoSat == 'No Encontrado':
+
+                    self.change_Status_InSmart(file)
+
+                    self.log.line("Comprobante con estado No Encontrado se movera a NO_ENCONTRADAS_SAT")
+
+                    self.move_To_NoEncontradasSAT(file, _with_pdf=False)
+
+                else:
+                    self.change_Status_InSmart(file)
+
+                    self.log.line("Comprobante con estado DESCONOCIDO se movera a NO_PROCESADAS")
+
+                    self.move_To_NoProcesadas(file, _with_pdf=False)
+
+            except Exception, error:
+
+                if error.__class__.__name__ == "Error":
+                    if error.control == "xml corrupto":
+
+                        self.log.line("El archivo tiene un formato XML incorrecto, se movera a NO_PROCESADAS")
+
+                        file = Archivo(
+                            self.folder_pendientes,
+                            filename
+                        )
+
+                        self.move_To_NoProcesadas(file, _with_pdf=True)
+
+                else:
+                    print str(error)
+
+        self.report_Results("Carga de comprobantes SAT")
+
+
+class SentinelCxp(SentinelSat):
+
+    def validate_Proveedor_InJDE(self, _file):
+
+        origin = "Sentinel.validate_Proveedor_InJDE()"
+
+        try:
+            proveedor = ModeloF0101.get_ByRfc(_file.emisor_rfc)
+            _file.emisor_jde_clave = proveedor.clave
+            self.log.line("Validacion de Proveedor.......OK")
+
+        except Exception as error:
+
+            self.log.line("Validacion de Proveedor.......%s." % (error))
+
+            self.log.line("Ocurrio error al validar Proveedor, por lo cual se movera a NO_PROCESADOS")
+
+            self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+            raise Error(
+                "validacion",
+                origin,
+                "no proveedor",
+                str(error)
+            )
+
+    def validate_Exist_InSmart(self, _file):
+
+        origin = "Sentinel.validate_Exist_InSmart()"
+
+        try:
+            comprobante = ModeloComprobanteProveedor.get(_file.uuid)
+            self.log.line("Validacion de Comprobante.......OK")
+
+        except Exception as error:
+
+            self.log.line("Validacion de Comprobante.......%s." % (error.mensaje))
+
+            self.log.line("No se pudo encontrar el Comprobante por lo cual se movera a NO_PROCESADOS")
+
+            self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+            raise Error(
+                "validacion",
+                origin,
+                "no comprobante",
+                str(error)
+            )
+
+    def save_InJDE(self, _file):
+
+        origin = "Sentinel.save_InJDE()"
+
+        try:
+            ModeloF5903000.add(_file)
+            self.log.line("Guardar en JDE.......OK")
+
+        except Exception as error:
+
+            if error.control == "registro ya existe":
+                self.log.line("Guardar en JDE.......Ya existe en BD")
+
+            else:
+                self.log.line("Guardar en JDE.......%s" % (error.mensaje))
+
+                self.log.line("No se pudo guardar en JDE por lo cual se movera a NO_PROCESADAS")
+
+                self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+                raise Error(
+                    "validacion",
+                    origin,
+                    "error al guardar in smart",
+                    str(error)
+                )
+
+    def mark_Reception_InSmart(self, _file):
+
+        origin = "Sentinel.mark_Reception_InSmart()"
+
+        try:
+            _file.comprobacion = "REC"
+            ModeloComprobanteProveedor.update_Comprobacion(_file)
+            self.log.line("Marcar de recibido en SmartCFDI......OK")
+
+        except Exception as error:
+            self.log.line("Marcar de recibido en SmartCFDI.......%s" % (error.mensaje))
+
+            self.log.line("No se pudo marcar de recibido en SmartCFDI por lo cual se movera a NO_PROCESADAS")
+
+            self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+            raise Error(
+                "validacion",
+                origin,
+                "error al marcar de recibido in smart",
+                str(error)
+            )
+
+    def process_Files(self, _file_names):
+
+        self.log.section(
+            "ARCHIVOS DE CXP A PROCESAR: %s" % (len(_file_names))
+        )
+
+        count_procesados = 0
+
+        for filename in _file_names:
+
+            try:
+                count_procesados += 1
+
+                self.log.section(
+                    "PORCESANDO ARCHIVO %s DE %s: %s" % (
+                        count_procesados,
+                        len(_file_names),
+                        filename
+                    )
+                )
+
+                file = Comprobante(
+                    self.folder_pendientes,
+                    filename
+                )
+
+                self.validate_Extension(file)
+
+                self.read_File(file)
+
+                self.validate_Empresa_InSmart(file)
+
+                # self.save_InSmart(file)
+
+                self.validate_Exist_InSmart(file)
+
+                self.validate_Estado_InSat(file)
 
                 if file.estadoSat == "Vigente":
 
@@ -530,7 +696,7 @@ class Sentinel(object):
 
                     self.mark_Reception_InSmart(file)
 
-                    self.validate_Proveedor(file)
+                    self.validate_Proveedor_InJDE(file)
 
                     self.save_InJDE(file)
 
@@ -567,39 +733,19 @@ class Sentinel(object):
 
             except Exception, error:
 
-                if error.control == "xml corrupto":
+                if error.__class__.__name__ == "Error":
+                    if error.control == "xml corrupto":
 
-                    self.log.line("El archivo tiene un formato XML incorrecto, se movera a NO_PROCESADAS")
+                        self.log.line("El archivo tiene un formato XML incorrecto, se movera a NO_PROCESADAS")
 
-                    file = Archivo(
-                        self.folder_pendientes,
-                        filename
-                    )
+                        file = Archivo(
+                            self.folder_pendientes,
+                            filename
+                        )
 
-                    self.move_To_NoProcesadas(file, _with_pdf=True)
+                        self.move_To_NoProcesadas(file, _with_pdf=True)
 
-                print str(error)
+                else:
+                    print str(error)
 
-    def start_Monitoring(self):
-
-        self.log.section(
-            "COMENZANDO MONITORIO DE CARPETA: %s" % (self.folder_pendientes.abspath)
-        )
-
-        before = dict([(f, None) for f in os.listdir(self.folder_pendientes.abspath)])
-
-        while 1:
-            time.sleep(10)
-            after = dict([(f, None) for f in os.listdir(self.folder_pendientes.abspath)])
-            added = [f for f in after if not f in before]
-            removed = [f for f in before if not f in after]
-
-            if added:
-                self.process_Files(added)
-
-            if removed:
-                # elSentinela.toProcessInvoices(removed)
-                print "\nRemoved: ", ", ".join(removed)
-                # Aqui va ir el codigo que revisa
-
-            before = after
+        self.report_Results("Revision de Facturas CXP")
