@@ -8,7 +8,8 @@ Thumbs.db
 # ---------------------------------------
 *.pyc
 
-# Other's Files
+
+# Other Files
 # ---------------------------------------
 db.*
 monitor_cxp.py
