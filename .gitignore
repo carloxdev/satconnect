@@ -14,8 +14,6 @@ Thumbs.db
 db.*
 monitor_cxp.py
 monitor_sat.py
-monitor_cxp.sh
-monitor_sat.sh
 
 # DIRECTORIES
 # ---------------------------------------
