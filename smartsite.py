@@ -6,7 +6,7 @@ import sys
 import json
 from datetime import datetime
 
-project_abspath = "/Users/Carlos/Files/Trabajo/Sintaxys/Proyectos/SmartCFDI/Sitio"
+project_abspath = "/webapps/smartcfdi/Sitio/"
 
 sys.path.append(project_abspath)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "SmartCFDI.settings")

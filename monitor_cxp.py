@@ -6,7 +6,7 @@ from slaves import SentinelCxp
 if __name__ == '__main__':
 
     carpeta = Carpeta(
-        '/Users/Carlos/Files/Trabajo/Sintaxys/Proyectos/SatConnect/comprobantes/monitor_cxp'
+        '/webapps/comprobantes/cxp/'
     )
     sentinela = SentinelCxp(carpeta)
     sentinela.start_Monitoring()
