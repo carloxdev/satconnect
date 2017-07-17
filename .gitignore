@@ -12,10 +12,11 @@ Thumbs.db
 # Other Files
 # ---------------------------------------
 db.*
-monitor_cxp.py
-monitor_sat.py
+settings.py
 
 # DIRECTORIES
 # ---------------------------------------
 .vscode/*
 LibTools/*
+LibTools
+LibTools/
