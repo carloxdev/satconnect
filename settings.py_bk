@@ -1,0 +1,6 @@
+global project_path
+global folder_monitor
+
+project_path = "/Users/Carlos/Files/Trabajo/Sintaxys/Proyectos/SmartCFDI/Sitio"
+folder_cxp = '/Users/Carlos/Files/Trabajo/Sintaxys/Proyectos/SatConnect/comprobantes/monitor_cxp'
+folder_sat = '/Users/Carlos/Files/Trabajo/Sintaxys/Proyectos/SatConnect/comprobantes/monitor_sat'
