@@ -383,7 +383,7 @@ class ModeloF0101(object):
 
         try:
             connection.close()
-            registro = F0101.objects.using('jde_p').get(rfc__contains=_rfc)
+            registro = F0101.objects.using('jde_p').get(rfc__contains=_rfc, tipo__contains="V" )
             return registro
 
         except Exception as error:

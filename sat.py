@@ -30,13 +30,13 @@ class WebServiceSAT(object):
                             </soap:Envelope>"""
 
     def get_Estado(self, emisor_rfc, receptor_rfc, total, uuid):
-
         """ Posibles valores de retorno:
             Vigente
             Cancelado
             Desconocido
         """
-
+        import ipdb
+        ipdb.set_trace()
         origin = "WebServiceSAT.get_Estado()"
 
         datos = self.mensajeSoap.format(emisor_rfc, receptor_rfc, total, uuid).encode('utf-8')
@@ -64,4 +64,3 @@ class WebServiceSAT(object):
                 "",
                 str(error)
             )
-
