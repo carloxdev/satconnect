@@ -48,9 +48,8 @@ class WebServiceSAT(object):
         prepped = request_.prepare()
 
         try:
-
             response = sesion_.send(prepped, timeout=5)
-            tree = ElementTree.fromstring(response.text)
+            tree = ElementTree.fromstring(response.text.encode('utf-8'))
             estado = tree[0][0][0][1].text
             return estado
 
