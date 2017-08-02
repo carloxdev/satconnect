@@ -179,57 +179,47 @@ class Comprobante(Archivo):
                     str(error)
                 )
 
+    def get_Value_Nodo(self, _node, _list, _type, _default=0):
+
+        value = None
+
+        for item in _list:
+            if _node.get(item):
+                value = _node.get(item)
+
+        if _type == "char":
+            value = Validator.convertToChar(value)
+        elif _type == "float":
+            value = Validator.convertToFloat(value, _default)
+        elif _type == "int":
+            value = Validator.convertToInt(value)
+        elif _type == "date":
+            value = Validator.convertToDate(value)
+        else:
+            value = value
+
+        return value
+
     def read_Comprobante_Node(self):
 
         origin = "Comprobante.read_Comprobante_Node()"
 
         try:
-
-            self.serie = Validator.convertToChar(
-                self.raiz.get('serie')
-            )
-            self.folio = Validator.convertToChar(
-                self.raiz.get('folio')
-            )
-            self.fecha = Validator.convertToDate(
-                self.raiz.get('fecha')
-            )
-            self.formaDePago = Validator.convertToChar(
-                self.raiz.get('formaDePago')
-            )
-            self.noCertificado = Validator.convertToChar(
-                self.raiz.get('noCertificado')
-            )
-            self.subTotal = Validator.convertToFloat(
-                self.raiz.get('subTotal')
-            )
-            self.tipoCambio = Validator.convertToFloat(
-                self.raiz.get('TipoCambio'), 1
-            )
-            self.moneda = Validator.convertToChar(
-                self.raiz.get('Moneda')
-            )
-            self.sello = Validator.convertToChar(
-                self.raiz.get('sello')
-            )
-            self.total = Validator.convertToFloat(
-                self.raiz.get('total')
-            )
-            self.tipoDeComprobante = Validator.convertToChar(
-                self.raiz.get('tipoDeComprobante')
-            )
-            self.metodoDePago = Validator.convertToChar(
-                self.raiz.get('metodoDePago')
-            )
-            self.lugarExpedicion = Validator.convertToChar(
-                self.raiz.get('LugarExpedicion')
-            )
-            self.numCtaPago = Validator.convertToChar(
-                self.raiz.get('NumCtaPago')
-            )
-            self.condicionesDePago = Validator.convertToChar(
-                self.raiz.get("condicionesDePago")
-            )
+            self.serie = self.get_Value_Nodo(self.raiz, ['serie', 'Serie'], "char")
+            self.folio = self.get_Value_Nodo(self.raiz, ['folio', 'Folio'], "char")
+            self.fecha = self.get_Value_Nodo(self.raiz, ['fecha', 'Fecha'], "date")
+            self.formaDePago = self.get_Value_Nodo(self.raiz, ['formaDePago', 'FormaPago'], "char")
+            self.noCertificado = self.get_Value_Nodo(self.raiz, ['noCertificado', 'NoCertificado'], "char")
+            self.subTotal = self.get_Value_Nodo(self.raiz, ['subTotal', 'SubTotal'], "float")
+            self.tipoCambio = self.get_Value_Nodo(self.raiz, ['TipoCambio'], "float", 1)
+            self.moneda = self.get_Value_Nodo(self.raiz, ['Moneda'], "char")
+            self.sello = self.get_Value_Nodo(self.raiz, ['sello', 'Sello'], "char")
+            self.total = self.get_Value_Nodo(self.raiz, ['total'], "float")
+            self.tipoDeComprobante = self.get_Value_Nodo(self.raiz, ['tipoDeComprobante', 'TipoDeComprobante'], "char")
+            self.metodoDePago = self.get_Value_Nodo(self.raiz, ['metodoDePago', 'MetodoPago'], "char")
+            self.lugarExpedicion = self.get_Value_Nodo(self.raiz, ['LugarExpedicion'], "char")
+            self.numCtaPago = self.get_Value_Nodo(self.raiz, ['NumCtaPago'], "char")
+            self.condicionesDePago = self.get_Value_Nodo(self.raiz, ['condicionesDePago', 'CondicionesDePago'], "char")
 
             return True
 
@@ -252,13 +242,9 @@ class Comprobante(Archivo):
                 self.name_spaces
             )
 
-            # Obtener atributos
-            self.emisor_rfc = Validator.convertToChar(
-                nodo.get('rfc').upper()
-            )
-            self.emisor_nombre = Validator.convertToChar(
-                nodo.get('nombre').upper()
-            )
+            self.emisor_rfc = self.get_Value_Nodo(nodo, ['rfc', 'Rfc'], "char").upper()
+            self.emisor_nombre = self.get_Value_Nodo(nodo, ['nombre', 'Nombre'], "char").upper()
+            self.emisor_regimen = self.get_Value_Nodo(nodo, ['RegimenFiscal'], "char")
 
             return True
 
@@ -283,33 +269,15 @@ class Comprobante(Archivo):
             )
 
             # obtener datos
-            self.emisor_calle = Validator.convertToChar(
-                nodo.get("calle")
-            )
-            self.emisor_noExterior = Validator.convertToChar(
-                nodo.get("noExterior")
-            )
-            self.emisor_noInterior = Validator.convertToChar(
-                nodo.get("noInterior")
-            )
-            self.emisor_colonia = Validator.convertToChar(
-                nodo.get("colonia")
-            )
-            self.emisor_localidad = Validator.convertToChar(
-                nodo.get("localidad")
-            )
-            self.emisor_municipio = Validator.convertToChar(
-                nodo.get("municipio")
-            )
-            self.emisor_estado = Validator.convertToChar(
-                nodo.get("estado")
-            )
-            self.emisor_pais = Validator.convertToChar(
-                nodo.get("pais")
-            )
-            self.emisor_codigoPostal = Validator.convertToInt(
-                nodo.get("codigoPostal")
-            )
+            self.emisor_calle = self.get_Value_Nodo(nodo, ['calle'], "char")
+            self.emisor_noExterior = self.get_Value_Nodo(nodo, ['noExterior'], "char")
+            self.emisor_noInterior = self.get_Value_Nodo(nodo, ['noInterior'], "char")
+            self.emisor_colonia = self.get_Value_Nodo(nodo, ['colonia'], "char")
+            self.emisor_localidad = self.get_Value_Nodo(nodo, ['localidad'], "char")
+            self.emisor_municipio = self.get_Value_Nodo(nodo, ['municipio'], "char")
+            self.emisor_estado = self.get_Value_Nodo(nodo, ['estado'], "char")
+            self.emisor_pais = self.get_Value_Nodo(nodo, ['pais'], "char")
+            self.emisor_codigoPostal = self.get_Value_Nodo(nodo, ['codigoPostal'], "int")
 
             return True
 
@@ -334,27 +302,13 @@ class Comprobante(Archivo):
             )
 
             # obtener datos
-            self.emisor_expedidoEn_calle = Validator.convertToChar(
-                nodo.get("calle")
-            )
-            self.emisor_expedidoEn_noExterior = Validator.convertToChar(
-                nodo.get("noExterior")
-            )
-            self.emisor_expedidoEn_noInterior = Validator.convertToChar(
-                nodo.get("noInterior")
-            )
-            self.emisor_expedidoEn_colonia = Validator.convertToChar(
-                nodo.get("colonia")
-            )
-            self.emisor_expedidoEn_municipio = Validator.convertToChar(
-                nodo.get("municipio")
-            )
-            self.emisor_expedidoEn_estado = Validator.convertToChar(
-                nodo.get("estado")
-            )
-            self.emisor_expedidoEn_pais = Validator.convertToChar(
-                nodo.get("pais")
-            )
+            self.emisor_expedidoEn_calle = self.get_Value_Nodo(nodo, ['calle'], "char")
+            self.emisor_expedidoEn_noExterior = self.get_Value_Nodo(nodo, ['noExterior'], "char")
+            self.emisor_expedidoEn_noInterior = self.get_Value_Nodo(nodo, ['noInterior'], "char")
+            self.emisor_expedidoEn_colonia = self.get_Value_Nodo(nodo, ['colonia'], "char")
+            self.emisor_expedidoEn_municipio = self.get_Value_Nodo(nodo, ['municipio'], "char")
+            self.emisor_expedidoEn_estado = self.get_Value_Nodo(nodo, ['estado'], "char")
+            self.emisor_expedidoEn_pais = self.get_Value_Nodo(nodo, ['pais'], "char")
 
             return True
 
@@ -375,10 +329,7 @@ class Comprobante(Archivo):
                 'cfdi:RegimenFiscal',
                 self.name_spaces
             )
-
-            self.emisor_regimen = Validator.convertToChar(
-                nodo.get("Regimen")
-            )
+            self.emisor_regimen = self.get_Value_Nodo(nodo, ['Regimen'], "char")
 
             return True
 
@@ -401,12 +352,8 @@ class Comprobante(Archivo):
                 self.name_spaces
             )
 
-            self.receptor_rfc = Validator.convertToChar(
-                nodo.get('rfc').upper()
-            )
-            self.receptor_nombre = Validator.convertToChar(
-                nodo.get('nombre').upper()
-            )
+            self.receptor_rfc = self.get_Value_Nodo(nodo, ['rfc', 'Rfc'], "char")
+            self.receptor_nombre = self.get_Value_Nodo(nodo, ['nombre', 'Nombre'], "char")
 
             return True
 
@@ -429,33 +376,15 @@ class Comprobante(Archivo):
                 self.name_spaces
             )
 
-            self.receptor_calle = Validator.convertToChar(
-                nodo.get("calle")
-            )
-            self.receptor_noExterior = Validator.convertToChar(
-                nodo.get("noExterior")
-            )
-            self.receptor_noInterior = Validator.convertToChar(
-                nodo.get("noInterior")
-            )
-            self.receptor_colonia = Validator.convertToChar(
-                nodo.get("colonia")
-            )
-            self.receptor_localidad = Validator.convertToChar(
-                nodo.get("localidad")
-            )
-            self.receptor_municipio = Validator.convertToChar(
-                nodo.get("municipio")
-            )
-            self.receptor_estado = Validator.convertToChar(
-                nodo.get("estado")
-            )
-            self.receptor_pais = Validator.convertToChar(
-                nodo.get("pais")
-            )
-            self.receptor_codigoPostal = Validator.convertToInt(
-                nodo.get("codigoPostal")
-            )
+            self.receptor_calle = self.get_Value_Nodo(nodo, ['calle'], "char")
+            self.receptor_noExterior = self.get_Value_Nodo(nodo, ['noExterior'], "char")
+            self.receptor_noInterior = self.get_Value_Nodo(nodo, ['noInterior'], "char")
+            self.receptor_colonia = self.get_Value_Nodo(nodo, ['colonia'], "char")
+            self.receptor_localidad = self.get_Value_Nodo(nodo, ['localidad'], "char")
+            self.receptor_municipio = self.get_Value_Nodo(nodo, ['municipio'], "char")
+            self.receptor_estado = self.get_Value_Nodo(nodo, ['estado'], "char")
+            self.receptor_pais = self.get_Value_Nodo(nodo, ['pais'], "char")
+            self.receptor_codigoPostal = self.get_Value_Nodo(nodo, ['codigoPostal'], "char")
 
         except Exception, error:
             raise Error(
@@ -473,12 +402,8 @@ class Comprobante(Archivo):
 
             nodo = self.raiz.find('cfdi:Impuestos', self.name_spaces)
 
-            self.totalImpuestosTrasladados = Validator.convertToFloat(
-                nodo.get('totalImpuestosTrasladados')
-            )
-            self.totalImpuestosRetenidos = Validator.convertToFloat(
-                nodo.get('totalImpuestosRetenidos')
-            )
+            self.totalImpuestosTrasladados = self.get_Value_Nodo(nodo, ['totalImpuestosTrasladados'], "float")
+            self.totalImpuestosRetenidos = self.get_Value_Nodo(nodo, ['totalImpuestosRetenidos'], "float")
 
             return True
 
@@ -501,9 +426,9 @@ class Comprobante(Archivo):
             for nodo in nodos:
 
                 impuesto = {
-                    'impuesto': Validator.convertToChar(nodo.get('impuesto')),
-                    'tasa': Validator.convertToChar(nodo.get('tasa')),
-                    'importe': Validator.convertToChar(nodo.get('importe'))
+                    'impuesto': self.get_Value_Nodo(nodo, ['impuesto'], "char"),
+                    'tasa': self.get_Value_Nodo(nodo, ['tasa'], "char"),
+                    'importe': self.get_Value_Nodo(nodo, ['importe'], "char")
                 }
 
                 self.impuestos_trasladados.append(impuesto)
@@ -526,11 +451,11 @@ class Comprobante(Archivo):
             nodo = self.raiz.find('cfdi:Impuestos', self.name_spaces)
             nodos = nodo.find('cfdi:Retenciones', self.name_spaces)
 
-            for n in nodos:
+            for nodo in nodos:
 
                 impuesto = {
-                    'impuesto': Validator.convertToChar(n.get('impuesto')),
-                    'importe': Validator.convertToChar(n.get('importe'))
+                    'impuesto': self.get_Value_Nodo(nodo, ['impuesto'], "char"),
+                    'importe': self.get_Value_Nodo(nodo, ['importe'], "char"),
                 }
 
                 self.impuestos_retenidos.append(impuesto)
@@ -553,18 +478,12 @@ class Comprobante(Archivo):
             nodos = self.raiz.find('cfdi:Conceptos', self.name_spaces)
             for nodo in nodos:
                 item = {
-                    "cantidad": Validator.convertToChar(nodo.get('cantidad')),
-                    "unidad": Validator.convertToChar(nodo.get('unidad')),
-                    "noIdentificacion": Validator.convertToChar(
-                        nodo.get('noIdentificacion')
-                    ),
-                    "descripcion": Validator.convertToChar(
-                        nodo.get('descripcion')
-                    ),
-                    "valorUnitario": Validator.convertToChar(
-                        nodo.get('valorUnitario')
-                    ),
-                    "importe": Validator.convertToChar(nodo.get('importe'))
+                    "cantidad": self.get_Value_Nodo(nodo, ['cantidad'], "char"),
+                    "unidad": self.get_Value_Nodo(nodo, ['unidad'], "char"),
+                    "noIdentificacion": self.get_Value_Nodo(nodo, ['noIdentificacion'], "char"),
+                    "descripcion": self.get_Value_Nodo(nodo, ['descripcion'], "char"),
+                    "valorUnitario": self.get_Value_Nodo(nodo, ['valorUnitario'], "char"),
+                    "importe": self.get_Value_Nodo(nodo, ['importe'], "char")
                 }
 
                 self.conceptos.append(item)
@@ -584,24 +503,15 @@ class Comprobante(Archivo):
         origin = "Comprobante.read_Complemento_Node()"
 
         try:
-
             nodo = self.raiz.find('cfdi:Complemento', self.name_spaces).find(
                 'tfd:TimbreFiscalDigital',
                 self.name_spaces
             )
 
-            self.uuid = Validator.convertToChar(
-                nodo.get('UUID').upper()
-            )
-            self.fechaTimbrado = Validator.convertToDate(
-                nodo.get('FechaTimbrado')
-            )
-            self.noCertificadoSAT = Validator.convertToChar(
-                nodo.get('noCertificadoSAT')
-            )
-            self.selloSAT = Validator.convertToChar(
-                nodo.get('selloSAT')
-            )
+            self.uuid = self.get_Value_Nodo(nodo, ['UUID'], "char").upper()
+            self.fechaTimbrado = self.get_Value_Nodo(nodo, ['FechaTimbrado'], "date")
+            self.noCertificadoSAT = self.get_Value_Nodo(nodo, ['noCertificadoSAT', 'NoCertificadoSAT'], "char")
+            self.selloSAT = self.get_Value_Nodo(nodo, ['selloSAT', 'SelloSAT'], "char")
 
             return True
 
@@ -624,61 +534,24 @@ class Comprobante(Archivo):
                 self.name_spaces
             )
 
-            self.registroPatronal = Validator.convertToChar(
-                nodo.get('RegistroPatronal')
-            )
-
-            self.numEmpleado = Validator.convertToChar(
-                nodo.get('NumEmpleado')
-            )
-            self.curp = Validator.convertToChar(
-                nodo.get('CURP')
-            )
-            self.tipoRegimen = Validator.convertToChar(
-                nodo.get('TipoRegimen')
-            )
-            self.numSeguridadSocial = Validator.convertToChar(
-                nodo.get('NumSeguridadSocial')
-            )
-            self.fechaPago = Validator.convertToDate(
-                nodo.get('FechaPago'), hora=False
-            )
-            self.fechaInicialPago = Validator.convertToDate(
-                nodo.get('FechaInicialPago'), hora=False
-            )
-            self.fechaFinalPago = Validator.convertToDate(
-                nodo.get('FechaFinalPago'), hora=False
-            )
-            self.numDiasPagados = Validator.convertToInt(
-                nodo.get('NumDiasPagados')
-            )
-            self.clabe = Validator.convertToChar(
-                nodo.get('CLABE')
-            )
-            self.banco = Validator.convertToChar(
-                nodo.get('Banco')
-            )
-            self.fechaInicioRelLaboral = Validator.convertToDate(
-                nodo.get('FechaInicioRelLaboral'), hora=False
-            )
-            self.antiguedad = Validator.convertToInt(
-                nodo.get('Antiguedad')
-            )
-            self.puesto = Validator.convertToChar(
-                nodo.get('Puesto')
-            )
-            self.tipoJornada = Validator.convertToChar(
-                nodo.get('TipoJornada')
-            )
-            self.periodicidadPago = Validator.convertToChar(
-                nodo.get('PeriodicidadPago')
-            )
-            self.riesgoPuesto = Validator.convertToChar(
-                nodo.get('RiesgoPuesto')
-            )
-            self.salarioDiarioIntegrado = Validator.convertToFloat(
-                nodo.get('SalarioDiarioIntegrado')
-            )
+            self.registroPatronal = self.get_Value_Nodo(nodo, ['RegistroPatronal'], "char")
+            self.numEmpleado = self.get_Value_Nodo(nodo, ['NumEmpleado'], "char")
+            self.curp = self.get_Value_Nodo(nodo, ['CURP'], "char")
+            self.tipoRegimen = self.get_Value_Nodo(nodo, ['TipoRegimen'], "char")
+            self.numSeguridadSocial = self.get_Value_Nodo(nodo, ['NumSeguridadSocial'], "char")
+            self.fechaPago = self.get_Value_Nodo(nodo, ['FechaPago'], "date")
+            self.fechaInicialPago = self.get_Value_Nodo(nodo, ['FechaInicialPago'], "date")
+            self.fechaFinalPago = self.get_Value_Nodo(nodo, ['FechaFinalPago'], "date")
+            self.numDiasPagados = self.get_Value_Nodo(nodo, ['NumDiasPagados'], "int")
+            self.clabe = self.get_Value_Nodo(nodo, ['CLABE'], "char")
+            self.banco = self.get_Value_Nodo(nodo, ['Banco'], "char")
+            self.fechaInicioRelLaboral = self.get_Value_Nodo(nodo, ['FechaInicioRelLaboral'], "date")
+            self.antiguedad = self.get_Value_Nodo(nodo, ['Antiguedad'], "int")
+            self.puesto = self.get_Value_Nodo(nodo, ['Puesto'], "char")
+            self.tipoJornada = self.get_Value_Nodo(nodo, ['TipoJornada'], "char")
+            self.periodicidadPago = self.get_Value_Nodo(nodo, ['PeriodicidadPago'], "char")
+            self.riesgoPuesto = self.get_Value_Nodo(nodo, ['RiesgoPuesto'], "char")
+            self.salarioDiarioIntegrado = self.get_Value_Nodo(nodo, ['SalarioDiarioIntegrado'], "float")
 
             return True
 
@@ -700,26 +573,16 @@ class Comprobante(Archivo):
                 self.name_spaces
             ).find('nomina:Percepciones', self.name_spaces)
 
-            self.percepciones_totalGravado = Validator.convertToFloat(
-                nodos.get('TotalGravado')
-            )
-            self.percepciones_totalExento = Validator.convertToFloat(
-                nodos.get('TotalExento')
-            )
+            self.percepciones_totalGravado = self.get_Value_Nodo(nodos, ['TotalGravado'], "float")
+            self.percepciones_totalExento = self.get_Value_Nodo(nodos, ['TotalExento'], "float")
 
             for nodo in nodos:
                 item = {
-                    'TipoPercepcion': Validator.convertToChar(
-                        nodo.get('TipoPercepcion')
-                    ),
-                    'Clave': Validator.convertToChar(nodo.get('Clave')),
-                    'Concepto': Validator.convertToChar(nodo.get('Concepto')),
-                    'ImporteGravado': Validator.convertToChar(
-                        nodo.get('ImporteGravado')
-                    ),
-                    'ImporteExento': Validator.convertToChar(
-                        nodo.get('ImporteExento')
-                    ),
+                    'TipoPercepcion': self.get_Value_Nodo(nodo, ['TipoPercepcion'], "char"),
+                    'Clave': self.get_Value_Nodo(nodo, ['Clave'], "char"),
+                    'Concepto': self.get_Value_Nodo(nodo, ['Concepto'], "char"),
+                    'ImporteGravado': self.get_Value_Nodo(nodo, ['ImporteGravado'], "char"),
+                    'ImporteExento': self.get_Value_Nodo(nodo, ['ImporteExento'], "char")
                 }
 
                 self.percepciones.append(item)
@@ -744,30 +607,16 @@ class Comprobante(Archivo):
                 self.name_spaces
             ).find('nomina:Deducciones', self.name_spaces)
 
-            self.deducciones_totalGravado = Validator.convertToFloat(
-                nodos.get('TotalGravado')
-            )
-            self.deducciones_totalExento = Validator.convertToFloat(
-                nodos.get('TotalExento')
-            )
+            self.deducciones_totalGravado = self.get_Value_Nodo(nodos, ['TotalGravado'], "float")
+            self.deducciones_totalExento = self.get_Value_Nodo(nodos, ['TotalExento'], "float")
 
             for nodo in nodos:
                 item = {
-                    'TipoDeduccion': Validator.convertToChar(
-                        nodo.get('TipoDeduccion')
-                    ),
-                    'Clave': Validator.convertToChar(
-                        nodo.get('Clave')
-                    ),
-                    'Concepto': Validator.convertToChar(
-                        nodo.get('Concepto')
-                    ),
-                    'ImporteGravado': Validator.convertToChar(
-                        nodo.get('ImporteGravado')
-                    ),
-                    'ImporteExento': Validator.convertToChar(
-                        nodo.get('ImporteExento')
-                    ),
+                    'TipoDeduccion': self.get_Value_Nodo(nodo, ['TipoDeduccion'], "char"),
+                    'Clave': self.get_Value_Nodo(nodo, ['Clave'], "char"),
+                    'Concepto': self.get_Value_Nodo(nodo, ['Concepto'], "char"),
+                    'ImporteGravado': self.get_Value_Nodo(nodo, ['ImporteGravado'], "char"),
+                    'ImporteExento': self.get_Value_Nodo(nodo, ['ImporteExento'], "char")
                 }
 
                 self.deducciones.append(item)
@@ -794,13 +643,9 @@ class Comprobante(Archivo):
 
             for nodo in nodos:
                 item = {
-                    'Dias': Validator.convertToChar(nodo.get('Dias')),
-                    'TipoHoras': Validator.convertToChar(
-                        nodo.get('TipoHoras')
-                    ),
-                    'ImportePagado': Validator.convertToChar(
-                        nodo.get('ImportePagado')
-                    ),
+                    'Dias': self.get_Value_Nodo(nodo, ['Dias'], "char"),
+                    'TipoHoras': self.get_Value_Nodo(nodo, ['TipoHoras'], "char"),
+                    'ImportePagado': self.get_Value_Nodo(nodo, ['ImportePagado'], "char")
                 }
 
                 self.horasExtras.append(item)
@@ -994,36 +839,3 @@ class Comprobante(Archivo):
             self.fecha,
             self.fechaTimbrado
         )
-
-    def save_toBD(self, _empresa_clave, _urlpath):
-        pass
-        # self.empresa_clave = _empresa_clave
-        # self.url = Validator.convertToUrl(
-        #     _urlpath,
-        #     self.nombre
-        # )
-
-        # try:
-        #     if self.resumen_tipo == "PROVEEDORES":
-        #         ModeloFacturaProveedor.add(self)
-
-        #     elif self.resumen_tipo == "EMPLEADOS":
-        #         ModeloComprobanteEmpleado.add(self)
-
-        #     elif self.resumen_tipo == "CLIENTES":
-        #         ModeloFacturaCliente.add(self)
-
-        #     else:
-        #         raise ErrorValidacion(
-        #             "Comprobante.save_toBD()",
-        #             "Estado {}: No se establecio un tipo valido".format(
-        #                 self.resumen_tipo
-        #             )
-        #         )
-        #         return 0
-
-        #     return 1
-
-        # except Exception, error:
-        #     print (error.mensaje)
-        #     return 0

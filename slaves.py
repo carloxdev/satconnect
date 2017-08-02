@@ -714,7 +714,7 @@ class SentinelCxp(SentinelSat):
 
                     folder_novalidas = self.create_Folder_NoValidas(file)
 
-                    self.move_To_Procesadas(file, folder_novalidas, _with_pdf=True)
+                    self.move_To_Procesadas(file, folder_novalidas, _with_pdf=False)
 
                 elif file.estadoSat == 'No Encontrado':
 
