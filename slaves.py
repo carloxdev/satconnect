@@ -543,7 +543,7 @@ class SentinelSat(Sentinel):
                             filename
                         )
 
-                        self.move_To_NoProcesadas(file, _with_pdf=True)
+                        self.move_To_NoProcesadas(file, _with_pdf=False)
 
                 else:
                     print str(error)
