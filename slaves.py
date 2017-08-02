@@ -427,7 +427,7 @@ class SentinelSat(Sentinel):
 
                 self.log.line("No se pudo guardar en SmartCFDI por lo cual se movera a NO_PROCESADAS")
 
-                self.move_To_NoProcesadas(_file, _with_pdf=True)
+                self.move_To_NoProcesadas(_file, _with_pdf=False)
 
                 raise Error(
                     "validacion",
