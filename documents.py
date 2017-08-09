@@ -214,7 +214,7 @@ class Comprobante(Archivo):
             self.tipoCambio = self.get_Value_Nodo(self.raiz, ['TipoCambio'], "float", 1)
             self.moneda = self.get_Value_Nodo(self.raiz, ['Moneda'], "char")
             self.sello = self.get_Value_Nodo(self.raiz, ['sello', 'Sello'], "char")
-            self.total = self.get_Value_Nodo(self.raiz, ['total'], "float")
+            self.total = self.get_Value_Nodo(self.raiz, ['total', 'Total'], "float")
             self.tipoDeComprobante = self.get_Value_Nodo(self.raiz, ['tipoDeComprobante', 'TipoDeComprobante'], "char")
             self.metodoDePago = self.get_Value_Nodo(self.raiz, ['metodoDePago', 'MetodoPago'], "char")
             self.lugarExpedicion = self.get_Value_Nodo(self.raiz, ['LugarExpedicion'], "char")
