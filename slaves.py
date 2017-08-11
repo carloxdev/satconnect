@@ -758,6 +758,7 @@ class Fixman(object):
 
         lista_archivos = _folder.get_Files()
 
+        total = len(lista_archivos)
         c = 0
 
         for archivo in lista_archivos:
@@ -767,8 +768,11 @@ class Fixman(object):
                 factura = Comprobante(archivo.carpeta, archivo.nombre)
                 factura.read()
 
-                if factura.total <= 0:
+                registro = ModeloComprobanteProveedor.get(factura.uuid)
+
+                if registro.total <= 0:
+                    c = c + 1
                     ModeloComprobanteProveedor.update(factura)
                 # print factura.uuid
                 # print factura.total
-        print c
+        print "%s de %s" % (c, total)
