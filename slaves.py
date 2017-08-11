@@ -763,6 +763,7 @@ class Fixman(object):
             if archivo.validate_Extension(".xml"):
                 factura = Comprobante(archivo.carpeta, archivo.nombre)
                 factura.read()
-                ModeloComprobanteProveedor.update(factura)
+                if factura.total == 0:
+                    ModeloComprobanteProveedor.update(factura)
                 # print factura.uuid
                 # print factura.total
