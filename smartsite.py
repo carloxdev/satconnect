@@ -335,17 +335,17 @@ class ModeloF5903000(object):
                 fttaxs=_comprobante.receptor_rfc,
                 ftbrtpo="CXP",
                 ftcrcd=_comprobante.moneda[0:3],
-                ftcrr=Validator.convertToFloat(_comprobante.tipoCambio),
-                ftamrt1=Validator.convertToFloat(_comprobante.total) * 10000,
-                ftamrt2=Validator.convertToFloat(_comprobante.subTotal) * 10000,
-                ftamrt3=Validator.convertToFloat(_comprobante.total) * 10000,
+                ftcrr=Validator.convert_ToFloat(_comprobante.tipoCambio),
+                ftamrt1=Validator.convert_ToFloat(_comprobante.total) * 10000,
+                ftamrt2=Validator.convert_ToFloat(_comprobante.subTotal) * 10000,
+                ftamrt3=Validator.convert_ToFloat(_comprobante.total) * 10000,
                 fturcd=0,
-                ftupmj=Validator.convertToJulianJDE(datetime.now().date()),
+                ftupmj=Validator.convert_ToJulianJDE(datetime.now().date()),
                 ftlo01='5',
                 ftuser='ENDTOEND',
                 ftpid='SYNFAC',
                 ftjobn='ENDTOEND',
-                ftivd=Validator.convertToJulianJDE(_comprobante.fecha),
+                ftivd=Validator.convert_ToJulianJDE(_comprobante.fecha),
                 ftan8=_comprobante.emisor_jde_clave
             )
 
@@ -383,7 +383,7 @@ class ModeloF0101(object):
 
         try:
             connection.close()
-            registro = F0101.objects.using('jde_p').get(rfc__contains=_rfc, tipo__contains="V" )
+            registro = F0101.objects.using('jde_p').get(rfc__contains=_rfc, tipo__contains="V")
             return registro
 
         except Exception as error:

@@ -188,13 +188,13 @@ class Comprobante(Archivo):
                 value = _node.get(item)
 
         if _type == "char":
-            value = Validator.convertToChar(value)
+            value = Validator.convert_ToChar(value)
         elif _type == "float":
-            value = Validator.convertToFloat(value, _default)
+            value = Validator.convert_ToFloat(value, _default)
         elif _type == "int":
-            value = Validator.convertToInt(value)
+            value = Validator.convert_ToInt(value)
         elif _type == "date":
-            value = Validator.convertToDate(value)
+            value = Validator.convert_ToDate(value)
         else:
             value = value
 

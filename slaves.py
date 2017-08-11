@@ -749,3 +749,20 @@ class SentinelCxp(SentinelSat):
                     print str(error)
 
         self.report_Results("Revision de Facturas CXP")
+
+
+class Fixman(object):
+
+    @classmethod
+    def reload_Files_v3(self, _folder):
+
+        lista_archivos = _folder.get_Files()
+
+        for archivo in lista_archivos:
+
+            if archivo.validate_Extension(".xml"):
+                factura = Comprobante(archivo.carpeta, archivo.nombre)
+                factura.read()
+                ModeloComprobanteProveedor.update(factura)
+                # print factura.uuid
+                # print factura.total
