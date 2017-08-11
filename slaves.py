@@ -758,12 +758,17 @@ class Fixman(object):
 
         lista_archivos = _folder.get_Files()
 
+        c = 0
+
         for archivo in lista_archivos:
 
             if archivo.validate_Extension(".xml"):
+
                 factura = Comprobante(archivo.carpeta, archivo.nombre)
                 factura.read()
-                if factura.total == 0:
+
+                if factura.total <= 0:
                     ModeloComprobanteProveedor.update(factura)
                 # print factura.uuid
                 # print factura.total
+        print c
