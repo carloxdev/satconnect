@@ -18,6 +18,7 @@ from documents import Comprobante
 
 from smartsite import ModeloEmpresa
 from smartsite import ModeloComprobanteProveedor
+from smartsite import ModeloComprobanteEmpleado
 from smartsite import ModeloEmailAccount
 from smartsite import ModeloF0101
 from smartsite import ModeloF5903000
@@ -287,6 +288,7 @@ class Sentinel(object):
 
     def read_File(self, _file):
 
+
         origin = "Sentinel.read_File()"
 
         _file.read()
@@ -313,7 +315,8 @@ class Sentinel(object):
         origin = "Sentinel.validate_Empresa_InSmart()"
 
         try:
-            empresa = ModeloEmpresa.get_ByRfc(_file.receptor_rfc)
+            import ipdb; ipdb.set_trace()
+            empresa = ModeloEmpresa.get_ByRfc(_file.emisor_rfc)
             _file.empresa_clave = empresa.clave
             self.log.line("Validacion de empresa.......OK")
 
@@ -750,6 +753,235 @@ class SentinelCxp(SentinelSat):
 
         self.report_Results("Revision de Facturas CXP")
 
+
+class SentinelNomina(SentinelSat):
+
+    # def validate_Proveedor_InJDE(self, _file):
+    #
+    #     origin = "Sentinel.validate_Proveedor_InJDE()"
+    #
+    #     try:
+    #         proveedor = ModeloF0101.get_ByRfc(_file.emisor_rfc)
+    #         _file.emisor_jde_clave = proveedor.clave
+    #         self.log.line("Validacion de Proveedor.......OK")
+    #
+    #     except Exception as error:
+    #
+    #         self.log.line("Validacion de Proveedor.......%s." % (error))
+    #
+    #         self.log.line("Ocurrio error al validar Proveedor, por lo cual se movera a NO_PROCESADOS")
+    #
+    #         self.move_To_NoProcesadas(_file, _with_pdf=True)
+    #
+    #         raise Error(
+    #             "validacion",
+    #             origin,
+    #             "no proveedor",
+    #             str(error)
+    #         )
+
+    def validate_Exist_InSmart(self, _file):
+
+        origin = "Sentinel.validate_Exist_InSmart()"
+
+        try:
+            comprobante = ModeloComprobanteEmpleado.get(_file.uuid)
+            self.log.line("Validacion de Comprobante.......OK")
+
+        except Exception as error:
+
+            self.log.line("Validacion de Comprobante.......%s." % (error.mensaje))
+
+            self.log.line("No se pudo encontrar el Comprobante por lo cual se movera a NO_PROCESADOS")
+
+            self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+            raise Error(
+                "validacion",
+                origin,
+                "no comprobante",
+                str(error)
+            )
+
+    # def save_InJDE(self, _file):
+    #
+    #     origin = "Sentinel.save_InJDE()"
+    #
+    #     try:
+    #         ModeloF5903000.add(_file)
+    #         self.log.line("Guardar en JDE.......OK")
+    #
+    #     except Exception as error:
+    #
+    #         if error.control == "registro ya existe":
+    #             self.log.line("Guardar en JDE.......Ya existe en BD")
+    #
+    #         else:
+    #             self.log.line("Guardar en JDE.......%s" % (error.mensaje))
+    #
+    #             self.log.line("No se pudo guardar en JDE por lo cual se movera a NO_PROCESADAS")
+    #
+    #             self.move_To_NoProcesadas(_file, _with_pdf=True)
+    #
+    #             raise Error(
+    #                 "validacion",
+    #                 origin,
+    #                 "error al guardar in smart",
+    #                 str(error)
+    #             )
+
+    def save_InSmart(self, _file):
+
+        origin = "Sentinel.save_InSmart()"
+
+        try:
+            import ipdb; ipdb.set_trace()
+
+            ModeloComprobanteEmpleado.add(_file)
+
+            self.log.line("Guardar en SmartCFDI.......OK")
+
+        except Exception as error:
+
+            if error.control == "registro ya existe":
+                self.log.line("Guardar en SmartCFDI.......Ya existe en BD")
+
+            else:
+                self.log.line("Guardar en SmartCFDI (SentinelNomina).......%s" % (error.mensaje))
+
+                self.log.line("(SentinelNomina)No se pudo guardar en SmartCFDI por lo cual se movera a NO_PROCESADAS")
+
+                self.move_To_NoProcesadas(_file, _with_pdf=False)
+
+                raise Error(
+                    "validacion",
+                    origin,
+                    "error al guardar in smart",
+                    str(error)
+                )
+
+    def mark_Reception_InSmart(self, _file):
+
+        origin = "Sentinel.mark_Reception_InSmart()"
+
+        try:
+            _file.comprobacion = "REC"
+            ModeloComprobanteProveedor.update_Comprobacion(_file)
+            self.log.line("Marcar de recibido en SmartCFDI......OK")
+
+        except Exception as error:
+            self.log.line("Marcar de recibido en SmartCFDI.......%s" % (error.mensaje))
+
+            self.log.line("No se pudo marcar de recibido en SmartCFDI por lo cual se movera a NO_PROCESADAS")
+
+            self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+            raise Error(
+                "validacion",
+                origin,
+                "error al marcar de recibido in smart",
+                str(error)
+            )
+
+    def process_Files(self, _file_names):
+
+        self.log.section(
+            "ARCHIVOS DE NOMINA A PROCESAR: %s" % (len(_file_names))
+        )
+
+        count_procesados = 0
+
+        for filename in _file_names:
+
+            try:
+                count_procesados += 1
+
+                self.log.section(
+                    "PORCESANDO ARCHIVO %s DE %s: %s" % (
+                        count_procesados,
+                        len(_file_names),
+                        filename
+                    )
+                )
+
+                file = Comprobante(
+                    self.folder_pendientes,
+                    filename
+                )
+
+                self.validate_Extension(file)
+
+                self.read_File(file)
+
+                self.validate_Empresa_InSmart(file)
+
+                self.save_InSmart(file)
+
+                self.validate_Exist_InSmart(file)
+
+                self.validate_Estado_InSat(file)
+
+                if file.estadoSat == "Vigente":
+
+                    self.log.line("Comprobante con estado Valido se movera a VALIDAS")
+
+                    self.change_Status_InSmart(file)
+
+                    self.mark_Reception_InSmart(file)
+
+                    self.validate_Proveedor_InJDE(file)
+
+                    self.save_InJDE(file)
+
+                    folder_validas = self.create_Folder_Validas(file)
+
+                    self.move_To_Procesadas(file, folder_validas, _with_pdf=True)
+
+                elif file.estadoSat == "Cancelado":
+
+                    self.log.line("Comprobante con estado Cancelado se movera a NO_VALIDAS")
+
+                    self.change_Status_InSmart(file)
+
+                    self.mark_Reception_InSmart(file)
+
+                    folder_novalidas = self.create_Folder_NoValidas(file)
+
+                    self.move_To_Procesadas(file, folder_novalidas, _with_pdf=False)
+
+                elif file.estadoSat == 'No Encontrado':
+
+                    self.change_Status_InSmart(file)
+
+                    self.log.line("Comprobante con estado No Encontrado se movera a NO_ENCONTRADAS_SAT")
+
+                    self.move_To_NoEncontradasSAT(file, _with_pdf=True)
+
+                else:
+                    self.change_Status_InSmart(file)
+
+                    self.log.line("Comprobante con estado DESCONOCIDO se movera a NO_PROCESADAS")
+
+                    self.move_To_NoProcesadas(file, _with_pdf=True)
+
+            except Exception, error:
+
+                if error.__class__.__name__ == "Error":
+                    if error.control == "xml corrupto":
+
+                        self.log.line("El archivo tiene un formato XML incorrecto, se movera a NO_PROCESADAS")
+
+                        file = Archivo(
+                            self.folder_pendientes,
+                            filename
+                        )
+
+                        self.move_To_NoProcesadas(file, _with_pdf=True)
+
+                else:
+                    print str(error)
+
+        self.report_Results("Revision de archivos de Nomina")
 
 class Fixman(object):
 
