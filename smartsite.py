@@ -325,7 +325,6 @@ class ModeloComprobanteEmpleado(object):
     def add(self, _comprobante):
 
         origin = "ModeloComprobanteEmpleado.add()"
-        import ipdb; ipdb.set_trace()
         try:
             connection.close()
             comprobante = ComprobanteEmpleado(
@@ -421,7 +420,6 @@ class ModeloComprobanteEmpleado(object):
                 deducciones = _comprobante.deducciones,
                 horasExtras = _comprobante.horasExtras
             )
-            import ipdb; ipdb.set_trace()
 
             empresa = Empresa.objects.get(clave=_comprobante.empresa_clave)
             comprobante.empresa = empresa

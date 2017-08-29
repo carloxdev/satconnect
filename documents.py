@@ -685,7 +685,7 @@ class Comprobante(Archivo):
         origin = "Comprobante.read_Nomina12_Node()"
 
         try:
-            import ipdb; ipdb.set_trace()
+
             nodo = self.raiz.find('cfdi:Complemento', self.name_spaces).find(
                 'nomina12:Nomina',
                 self.name_spaces
@@ -737,7 +737,7 @@ class Comprobante(Archivo):
 
     def read_Nomina12_Receptor_Node(self):
         origin = "Comprobante.read_Nomina12_Recepror_Node()"
-        import ipdb; ipdb.set_trace()
+
         try:
             nodo = self.raiz.find('cfdi:Complemento', self.name_spaces).find(
                 'nomina12:Nomina',

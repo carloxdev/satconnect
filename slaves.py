@@ -315,7 +315,7 @@ class Sentinel(object):
         origin = "Sentinel.validate_Empresa_InSmart()"
 
         try:
-            import ipdb; ipdb.set_trace()
+
             empresa = ModeloEmpresa.get_ByRfc(_file.emisor_rfc)
             _file.empresa_clave = empresa.clave
             self.log.line("Validacion de empresa.......OK")
@@ -835,7 +835,6 @@ class SentinelNomina(SentinelSat):
         origin = "Sentinel.save_InSmart()"
 
         try:
-            import ipdb; ipdb.set_trace()
 
             ModeloComprobanteEmpleado.add(_file)
 
