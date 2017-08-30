@@ -756,30 +756,6 @@ class SentinelCxp(SentinelSat):
 
 class SentinelNomina(SentinelSat):
 
-    # def validate_Proveedor_InJDE(self, _file):
-    #
-    #     origin = "Sentinel.validate_Proveedor_InJDE()"
-    #
-    #     try:
-    #         proveedor = ModeloF0101.get_ByRfc(_file.emisor_rfc)
-    #         _file.emisor_jde_clave = proveedor.clave
-    #         self.log.line("Validacion de Proveedor.......OK")
-    #
-    #     except Exception as error:
-    #
-    #         self.log.line("Validacion de Proveedor.......%s." % (error))
-    #
-    #         self.log.line("Ocurrio error al validar Proveedor, por lo cual se movera a NO_PROCESADOS")
-    #
-    #         self.move_To_NoProcesadas(_file, _with_pdf=True)
-    #
-    #         raise Error(
-    #             "validacion",
-    #             origin,
-    #             "no proveedor",
-    #             str(error)
-    #         )
-
     def validate_Exist_InSmart(self, _file):
 
         origin = "Sentinel.validate_Exist_InSmart()"
@@ -802,33 +778,6 @@ class SentinelNomina(SentinelSat):
                 "no comprobante",
                 str(error)
             )
-
-    # def save_InJDE(self, _file):
-    #
-    #     origin = "Sentinel.save_InJDE()"
-    #
-    #     try:
-    #         ModeloF5903000.add(_file)
-    #         self.log.line("Guardar en JDE.......OK")
-    #
-    #     except Exception as error:
-    #
-    #         if error.control == "registro ya existe":
-    #             self.log.line("Guardar en JDE.......Ya existe en BD")
-    #
-    #         else:
-    #             self.log.line("Guardar en JDE.......%s" % (error.mensaje))
-    #
-    #             self.log.line("No se pudo guardar en JDE por lo cual se movera a NO_PROCESADAS")
-    #
-    #             self.move_To_NoProcesadas(_file, _with_pdf=True)
-    #
-    #             raise Error(
-    #                 "validacion",
-    #                 origin,
-    #                 "error al guardar in smart",
-    #                 str(error)
-    #             )
 
     def save_InSmart(self, _file):
 
@@ -915,8 +864,6 @@ class SentinelNomina(SentinelSat):
                 self.validate_Empresa_InSmart(file)
 
                 self.save_InSmart(file)
-
-                self.validate_Exist_InSmart(file)
 
                 self.validate_Estado_InSat(file)
 
