@@ -319,6 +319,7 @@ class ModeloComprobanteProveedor(object):
                 str(error)
             )
 
+
 class ModeloComprobanteEmpleado(object):
 
     @classmethod
@@ -497,7 +498,7 @@ class ModeloComprobanteEmpleado(object):
 
         try:
             connection.close()
-            comprobante = ComprobanteProveedor.objects.get(uuid=_comprobante.uuid)
+            comprobante = ComprobanteEmpleado.objects.get(uuid=_comprobante.uuid)
             comprobante.comprobacion = _comprobante.comprobacion
 
             file_name = _comprobante.nombre.replace(
@@ -635,6 +636,7 @@ class ModeloComprobanteEmpleado(object):
                 "",
                 str(error)
             )
+
 
 class ModeloF5903000(object):
 

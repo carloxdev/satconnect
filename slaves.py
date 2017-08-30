@@ -756,6 +756,126 @@ class SentinelCxp(SentinelSat):
 
 class SentinelNomina(SentinelSat):
 
+    def create_Folder_Validas(self, _file):
+
+        origin = "Sentinel.create_Folder_Validas()"
+
+        new_folders = [
+            "procesadas",
+            _file.empresa_clave,
+            _file.fecha.strftime('%Y'),
+            _file.fecha.strftime('%m'),
+            "validas",
+            _file.receptor_rfc
+        ]
+
+        abspath_validas = os.path.join(
+            self.folder.abspath,
+            *new_folders
+        )
+
+        folder_validas = Carpeta(abspath_validas)
+
+        try:
+
+            self.folder.add_Folders(new_folders)
+
+            folder_validas.exist(origin)
+
+            self.log.line("Creacion de folder VALIDAS (CXP).......OK")
+
+            return folder_validas
+
+        except Exception as error:
+
+            if error.control == "carpeta ya existe":
+
+                self.log.line("Creacion de folder VALIDAS (CXP).......Carpeta ya existe")
+                return folder_validas
+
+            else:
+                self.log.line("Creacion de folder VALIDAS (CXP).......%s" % (str(error)))
+                self.log.line("No se logro crear el folder de VALIDAS(CXP), por lo que se movera a NO_PROCESADAS")
+                self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+                raise Error(
+                    "validacion",
+                    origin,
+                    "error al crear carpeta validas",
+                    str(error)
+                )
+
+    def create_Folder_NoValidas(self, _file):
+
+        origin = "Sentinel.create_Folder_NoValidas()"
+
+        new_folders = [
+            "procesadas",
+            _file.empresa_clave,
+            _file.fecha.strftime('%Y'),
+            _file.fecha.strftime('%m'),
+            "no_validas",
+            _file.receptor_rfc
+        ]
+
+        abspath_novalidas = os.path.join(
+            self.folder.abspath,
+            *new_folders
+        )
+
+        folder_novalidas = Carpeta(abspath_novalidas)
+
+        try:
+
+            self.folder.add_Folders(new_folders)
+
+            folder_novalidas.exist(origin)
+
+            self.log.line("Creacion de folder NO_VALIDAS (CXP).......OK")
+
+            return folder_novalidas
+
+        except Exception as error:
+
+            if error.control == "carpeta ya existe":
+
+                self.log.line("Creacion de folder NO_VALIDAS (CXP).......Carpeta ya existe")
+                return folder_novalidas
+
+            else:
+                self.log.line("Creacion de folder NO_VALIDAS (CXP).......%s" % (str(error)))
+                self.log.line("No se logro crear el folder de NO_VALIDAS(CXP), por lo que se movera a NO_PROCESADAS")
+                self.move_To_NoProcesadas(_file, _with_pdf=True)
+
+                raise Error(
+                    "validacion",
+                    origin,
+                    "error al crear carpeta no_validas",
+                    str(error)
+                )
+
+    def change_Status_InSmart(self, _file):
+
+        origin = "Sentinel.change_Status_InSmart()"
+
+        try:
+            ModeloComprobanteEmpleado.update_SatStatus(_file)
+            self.log.line("Cambiar Estado SAT en SmartCFDI......OK")
+
+        except Exception as error:
+            self.log.line("Cambiar Estado SAT en SmartCFDI.......%s" % (error.mensaje))
+
+            self.log.line("No se pudo actualizar el Estado SAT en SmartCFDI por lo cual se movera a NO_PROCESADAS")
+
+            self.move_To_NoProcesadas(_file, _with_pdf=False)
+
+            raise Error(
+                "validacion",
+                origin,
+                "error al actualizar estado in smart",
+                str(error)
+            )
+
     def validate_Exist_InSmart(self, _file):
 
         origin = "Sentinel.validate_Exist_InSmart()"
@@ -814,7 +934,7 @@ class SentinelNomina(SentinelSat):
 
         try:
             _file.comprobacion = "REC"
-            ModeloComprobanteProveedor.update_Comprobacion(_file)
+            ModeloComprobanteEmpleado.update_Comprobacion(_file)
             self.log.line("Marcar de recibido en SmartCFDI......OK")
 
         except Exception as error:
@@ -875,10 +995,6 @@ class SentinelNomina(SentinelSat):
 
                     self.mark_Reception_InSmart(file)
 
-                    self.validate_Proveedor_InJDE(file)
-
-                    self.save_InJDE(file)
-
                     folder_validas = self.create_Folder_Validas(file)
 
                     self.move_To_Procesadas(file, folder_validas, _with_pdf=True)
@@ -928,6 +1044,7 @@ class SentinelNomina(SentinelSat):
                     print str(error)
 
         self.report_Results("Revision de archivos de Nomina")
+
 
 class Fixman(object):
 
