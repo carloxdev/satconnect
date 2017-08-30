@@ -781,7 +781,6 @@ class Comprobante(Archivo):
                 'nomina12:Nomina',
                 self.name_spaces
             ).find('nomina12:Percepciones', self.name_spaces)
-
             self.percepciones_totalGravado = self.get_Value_Nodo(nodos, ['TotalGravado'], "float")
             self.percepciones_totalExento = self.get_Value_Nodo(nodos, ['TotalExento'], "float")
             self.TotalSueldos = self.get_Value_Nodo(nodos,['TotalSueldos'], "char")
@@ -840,36 +839,6 @@ class Comprobante(Archivo):
                 str(error)
             )
 
-        origin = "Comprobante.read_Nomina12_Deducciones_Node()"
-
-        try:
-            nodos = self.raiz.find('cfdi:Complemento', self.name_spaces).find(
-                'tfd:TimbreFiscalDigital',
-                self.name_spaces
-            )
-
-            self.deducciones_totalOtrasDeducciones = self.get_Value_Nodo(nodos, ['TotalOtrasDeducciones'], "float")
-            self.deducciones_totalImpuestosRetenidos = self.get_Value_Nodo(nodos, ['TotalImpuestosRetenidos'], "float")
-
-            for nodo in nodos:
-                item = {
-                    'TipoDeduccion': self.get_Value_Nodo(nodo, ['TipoDeduccion'], "char"),
-                    'Clave': self.get_Value_Nodo(nodo, ['Clave'], "char"),
-                    'Concepto': self.get_Value_Nodo(nodo, ['Concepto'], "char"),
-                    'Importe': self.get_Value_Nodo(nodo, ['Importe'], "char"),
-                }
-
-                self.deducciones.append(item)
-
-            return True
-
-        except Exception, error:
-            raise Error(
-                type(error).__name__,
-                origin,
-                "",
-                str(error)
-            )
 
     def read(self):
 
@@ -1064,6 +1033,25 @@ class Comprobante(Archivo):
                 error.mensaje
             )
 
+        # Se obtienen datos del nodo PERCEPCIONES 1.2
+        try:
+            self.read_Nomina12_Percepciones_Node()
+            print "Obtiendo datos del nodo PERCEPCIONES 1.2.............OK"
+
+        except Exception, error:
+            print "Obtiendo datos del nodo PERCEPCIONES 1.2..............{}".format(
+                error.mensaje
+            )
+
+        # Se obtienen datos del nodo DEDUCCIONES 1.2
+        try:
+            self.read_Nomina12_Deducciones_Node()
+            print "Obtiendo datos del nodo DEDUCCIONES 1.2.............OK"
+
+        except Exception, error:
+            print "Obtiendo datos del nodo DEDUCCIONES 1.2..............{}".format(
+                error.mensaje
+            )
 
     def __str__(self):
         return """
