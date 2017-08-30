@@ -1071,3 +1071,29 @@ class Fixman(object):
                 # print factura.uuid
                 # print factura.total
         print "%s de %s" % (c, total)
+
+
+    @classmethod
+    def reload_FilesNomina(self, _folder):
+
+        lista_archivos = _folder.get_Files()
+
+        total = len(lista_archivos)
+        c = 0
+
+        for archivo in lista_archivos:
+
+            if archivo.validate_Extension(".xml"):
+
+                factura = Comprobante(archivo.carpeta, archivo.nombre)
+                factura.read()
+
+                registro = ModeloComprobanteEmpleado.get(factura.uuid)
+
+                if registro:
+                    c = c + 1
+                    ModeloComprobanteEmpleado.update(factura)
+                # print factura.uuid
+                # print factura.total
+        print "%s de %s" % (c, total)
+
