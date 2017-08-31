@@ -844,7 +844,7 @@ class SentinelNomina(SentinelSat):
                 settings.smtp_server,
                 settings.people
             )
-            import ipdb; ipdb.set_trace()
+            
             cartero.send_Gmail_Message(_title, self.log.texto)
 
         except Exception as error:
