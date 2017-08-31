@@ -779,6 +779,28 @@ class SentinelNomina(SentinelSat):
                 str(error)
             )
 
+    def change_Status_InSmart(self, _file):
+
+        origin = "Sentinel.change_Status_InSmart()"
+
+        try:
+            ModeloComprobanteEmpleado.update_SatStatus(_file)
+            self.log.line("Cambiar Estado SAT en SmartCFDI......OK")
+
+        except Exception as error:
+            self.log.line("Cambiar Estado SAT en SmartCFDI.......%s" % (error.mensaje))
+
+            self.log.line("No se pudo actualizar el Estado SAT en SmartCFDI por lo cual se movera a NO_PROCESADAS")
+
+            self.move_To_NoProcesadas(_file, _with_pdf=False)
+
+            raise Error(
+                "validacion",
+                origin,
+                "error al actualizar estado in smart",
+                str(error)
+            )
+
     def save_InSmart(self, _file):
 
         origin = "Sentinel.save_InSmart()"
@@ -814,7 +836,7 @@ class SentinelNomina(SentinelSat):
 
         try:
             _file.comprobacion = "REC"
-            ModeloComprobanteProveedor.update_Comprobacion(_file)
+            ModeloComprobanteEmpleado.update_Comprobacion(_file)
             self.log.line("Marcar de recibido en SmartCFDI......OK")
 
         except Exception as error:
@@ -895,10 +917,6 @@ i
                     self.change_Status_InSmart(file)
 
                     self.mark_Reception_InSmart(file)
-
-                    self.validate_Proveedor_InJDE(file)
-
-                    self.save_InJDE(file)
 
                     folder_validas = self.create_Folder_Validas(file)
 
