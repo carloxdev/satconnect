@@ -701,7 +701,7 @@ class SentinelCxp(SentinelSat):
                     self.folder_pendientes,
                     filename
                 )
-                import ipdb; ipdb.set_trace()
+
                 self.validate_Extension(file)
 
                 self.read_File(file)
