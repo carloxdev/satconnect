@@ -310,31 +310,6 @@ class Sentinel(object):
                 "El archivo no contiene UUID"
             )
 
-    def validate_Empresa_InSmart(self, _file):
-
-        origin = "Sentinel.validate_Empresa_InSmart()"
-
-        try:
-
-            empresa = ModeloEmpresa.get_ByRfc(_file.emisor_rfc)
-            _file.empresa_clave = empresa.clave
-            self.log.line("Validacion de empresa.......OK")
-
-        except Exception as error:
-
-            self.log.line("Validacion de empresa.......%s." % (error.mensaje))
-
-            self.log.line("No se pudo validar la Empresa por lo cual se movera a NO_EMPRESA")
-
-            self.move_To_NoEmpresa(_file, _with_pdf=True)
-
-            raise Error(
-                "validacion",
-                origin,
-                "no empresa",
-                str(error)
-            )
-
     def validate_Estado_InSat(self, _file):
 
         origin = "Sentinel.validate_Estado_InSat()"
@@ -389,6 +364,31 @@ class Sentinel(object):
 
 
 class SentinelSat(Sentinel):
+
+    def validate_Empresa_InSmart(self, _file):
+
+        origin = "Sentinel.validate_Empresa_InSmart()"
+
+        try:
+            import ipdb; ipdb.set_trace()
+            empresa = ModeloEmpresa.get_ByRfc(_file.receptor_rfc)
+            _file.empresa_clave = empresa.clave
+            self.log.line("Validacion de empresa.......OK")
+
+        except Exception as error:
+
+            self.log.line("Validacion de empresa.......%s." % (error.mensaje))
+
+            self.log.line("No se pudo validar la Empresa por lo cual se movera a NO_EMPRESA")
+
+            self.move_To_NoEmpresa(_file, _with_pdf=True)
+
+            raise Error(
+                "validacion",
+                origin,
+                "no empresa",
+                str(error)
+            )
 
     def change_Status_InSmart(self, _file):
 
@@ -603,6 +603,31 @@ class SentinelCxp(SentinelSat):
                 str(error)
             )
 
+    def validate_Empresa_InSmart(self, _file):
+
+        origin = "Sentinel.validate_Empresa_InSmart()"
+
+        try:
+            import ipdb; ipdb.set_trace()
+            empresa = ModeloEmpresa.get_ByRfc(_file.receptor_rfc)
+            _file.empresa_clave = empresa.clave
+            self.log.line("Validacion de empresa.......OK")
+
+        except Exception as error:
+
+            self.log.line("Validacion de empresa.......%s." % (error.mensaje))
+
+            self.log.line("No se pudo validar la Empresa por lo cual se movera a NO_EMPRESA")
+
+            self.move_To_NoEmpresa(_file, _with_pdf=True)
+
+            raise Error(
+                "validacion",
+                origin,
+                "no empresa",
+                str(error)
+            )
+
     def save_InJDE(self, _file):
 
         origin = "Sentinel.save_InJDE()"
@@ -756,6 +781,31 @@ class SentinelCxp(SentinelSat):
 
 class SentinelNomina(SentinelSat):
 
+    def validate_Empresa_InSmart(self, _file):
+
+        origin = "Sentinel.validate_Empresa_InSmart()"
+
+        try:
+            import ipdb; ipdb.set_trace()
+            empresa = ModeloEmpresa.get_ByRfc(_file.emisor_rfc)
+            _file.empresa_clave = empresa.clave
+            self.log.line("Validacion de empresa.......OK")
+
+        except Exception as error:
+
+            self.log.line("Validacion de empresa.......%s." % (error.mensaje))
+
+            self.log.line("No se pudo validar la Empresa por lo cual se movera a NO_EMPRESA")
+
+            self.move_To_NoEmpresa(_file, _with_pdf=True)
+
+            raise Error(
+                "validacion",
+                origin,
+                "no empresa",
+                str(error)
+            )
+
     def validate_Exist_InSmart(self, _file):
 
         origin = "Sentinel.validate_Exist_InSmart()"
@@ -866,7 +916,7 @@ class SentinelNomina(SentinelSat):
                 settings.smtp_server,
                 settings.people
             )
-i
+
             cartero.send_Gmail_Message(_title, self.log.texto)
 
         except Exception as error:
@@ -967,6 +1017,18 @@ i
                     print str(error)
 
         self.report_Results("Revision de archivos de Nomina")
+
+    def file_upload(self):
+
+        self.log.section(
+            "COMENZANDO LA CARGA DIRECTA DE ATCHIVOS: %s" % (self.folder_pendientes.abspath)
+        )
+        import ipdb; ipdb.set_trace()
+        files = dict([(f, None) for f in os.listdir(self.folder_pendientes.abspath)])
+
+        self.process_Files(files)
+
+
 
 
 class Fixman(object):
