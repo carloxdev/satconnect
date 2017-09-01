@@ -710,8 +710,6 @@ class SentinelCxp(SentinelSat):
 
                 self.validate_Empresa_InSmart(file)
 
-                # self.save_InSmart(file)
-
                 self.validate_Exist_InSmart(file)
 
                 self.validate_Estado_InSat(file)
@@ -724,9 +722,11 @@ class SentinelCxp(SentinelSat):
 
                     self.mark_Reception_InSmart(file)
 
-                    self.validate_Proveedor_InJDE(file)
+                    if file.receptor_rfc != "ATT070112267":
 
-                    self.save_InJDE(file)
+                        self.validate_Proveedor_InJDE(file)
+
+                        self.save_InJDE(file)
 
                     folder_validas = self.create_Folder_Validas(file)
 
