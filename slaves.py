@@ -370,7 +370,6 @@ class SentinelSat(Sentinel):
         origin = "Sentinel.validate_Empresa_InSmart()"
 
         try:
-            import ipdb; ipdb.set_trace()
             empresa = ModeloEmpresa.get_ByRfc(_file.receptor_rfc)
             _file.empresa_clave = empresa.clave
             self.log.line("Validacion de empresa.......OK")
@@ -608,7 +607,6 @@ class SentinelCxp(SentinelSat):
         origin = "Sentinel.validate_Empresa_InSmart()"
 
         try:
-            import ipdb; ipdb.set_trace()
             empresa = ModeloEmpresa.get_ByRfc(_file.receptor_rfc)
             _file.empresa_clave = empresa.clave
             self.log.line("Validacion de empresa.......OK")
@@ -786,7 +784,6 @@ class SentinelNomina(SentinelSat):
         origin = "Sentinel.validate_Empresa_InSmart()"
 
         try:
-            import ipdb; ipdb.set_trace()
             empresa = ModeloEmpresa.get_ByRfc(_file.emisor_rfc)
             _file.empresa_clave = empresa.clave
             self.log.line("Validacion de empresa.......OK")
@@ -1023,7 +1020,6 @@ class SentinelNomina(SentinelSat):
         self.log.section(
             "COMENZANDO LA CARGA DIRECTA DE ATCHIVOS: %s" % (self.folder_pendientes.abspath)
         )
-        import ipdb; ipdb.set_trace()
         files = dict([(f, None) for f in os.listdir(self.folder_pendientes.abspath)])
 
         self.process_Files(files)
