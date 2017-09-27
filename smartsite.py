@@ -377,7 +377,7 @@ class ModeloComprobanteEmpleado(object):
                 receptor_jde_clave=_comprobante.numEmpleado,
                 conceptos=json.dumps(_comprobante.conceptos),
                 totalImpuestosTrasladados=_comprobante.totalImpuestosTrasladados,
-                totalImpuestosRetenidos=_comprobante.deducciones_totalImpuestosRetenidos,
+                totalImpuestosRetenidos=_comprobante.totalImpuestosRetenidos,
                 impuestos_trasladados=json.dumps(
                     _comprobante.impuestos_trasladados),
                 impuestos_retenidos=json.dumps(
@@ -418,7 +418,7 @@ class ModeloComprobanteEmpleado(object):
                 percepciones_totalExento = _comprobante.percepciones_totalExento,
                 percepciones = _comprobante.percepciones,
                 deducciones_totalGravado = _comprobante.totalDeducciones,
-                deducciones_totalExento = 0,
+                deducciones_totalExento = 0.0,
                 deducciones = _comprobante.deducciones,
                 horasExtras = _comprobante.horasExtras
             )

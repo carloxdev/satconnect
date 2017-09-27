@@ -693,8 +693,8 @@ class Comprobante(Archivo):
 
             #1.2
             self.tipoNomina = self.get_Value_Nodo(nodo, ['TipoNomina'], "char")
-            self.totalDeducciones = self.get_Value_Nodo(nodo, ['TotalDeducciones'], "char")
-            self.totalPercepciones = self.get_Value_Nodo(nodo, ['TotalPercepciones'], "char")
+            self.totalDeducciones = self.get_Value_Nodo(nodo, ['TotalDeducciones'], "float")
+            self.totalPercepciones = self.get_Value_Nodo(nodo, ['TotalPercepciones'], "float")
             self.version = self.get_Value_Nodo(nodo, ['Version'], "char")
             #/1.2
             self.fechaInicialPago = self.get_Value_Nodo(nodo, ['FechaInicialPago'], "date")
