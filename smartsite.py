@@ -324,7 +324,7 @@ class ModeloComprobanteEmpleado(object):
 
     @classmethod
     def add(self, _comprobante):
-        import ipdb; ipdb.set_trace()
+
         origin = "ModeloComprobanteEmpleado.add()"
         try:
             connection.close()
