@@ -324,7 +324,7 @@ class ModeloComprobanteEmpleado(object):
 
     @classmethod
     def add(self, _comprobante):
-
+        import ipdb; ipdb.set_trace()
         origin = "ModeloComprobanteEmpleado.add()"
         try:
             connection.close()
@@ -417,8 +417,8 @@ class ModeloComprobanteEmpleado(object):
                 percepciones_totalGravado = _comprobante.percepciones_totalGravado,
                 percepciones_totalExento = _comprobante.percepciones_totalExento,
                 percepciones = _comprobante.percepciones,
-                deducciones_totalGravado = _comprobante.totalDeducciones,
-                deducciones_totalExento = 0.0,
+                deducciones_totalGravado = _comprobante.totalDeducciones if _comprobante.version == '1.2' else _comprobante.deducciones_totalGravado,
+                deducciones_totalExento = 0.0 if _comprobante.version == '1.2' else _comprobante.deducciones_totalExento,
                 deducciones = _comprobante.deducciones,
                 horasExtras = _comprobante.horasExtras
             )
